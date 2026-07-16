@@ -9,7 +9,7 @@ description = "Spectron agent memory for Pydantic AI: toolset, auto-recall histo
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "SurrealDB" }]
 keywords = [
     "surrealdb",
@@ -32,7 +32,7 @@ classifiers = [
 ]
 dependencies = [
     "pydantic-ai-slim>=2.7",
-    "surrealdb>=2.0",
+    "surrealdb>=3.0.0a1",
 ]
 
 [project.urls]

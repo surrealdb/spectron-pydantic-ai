@@ -4,10 +4,10 @@ The agent decides when to recall or remember. Run it twice: in the first run it
 stores a preference, in the second run it recalls it.
 
 Prerequisites:
-    pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]" "surrealdb[spectron]"
+    pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]"
 
 Environment variables:
-    SPECTRON_URL, SPECTRON_NAMESPACE, SPECTRON_TOKEN
+    SPECTRON_CONTEXT, SPECTRON_ENDPOINT, SPECTRON_API_KEY
     OPENAI_API_KEY
 """
 
@@ -23,10 +23,10 @@ from spectron_pydantic_ai import SpectronMemory, SpectronToolset
 
 async def main() -> None:
     memory = SpectronMemory.connect(
-        url=os.environ["SPECTRON_URL"],
-        namespace=os.environ["SPECTRON_NAMESPACE"],
-        token=os.environ["SPECTRON_TOKEN"],
-        user_id="ada",
+        context=os.environ["SPECTRON_CONTEXT"],
+        endpoint=os.environ["SPECTRON_ENDPOINT"],
+        api_key=os.environ["SPECTRON_API_KEY"],
+        on_behalf_of="ada",
     )
 
     agent = Agent(

@@ -24,9 +24,10 @@ async def test_default_toolset_calls_dispatch(memory: SpectronMemory, client: Fa
     toolset = SpectronToolset(memory)
     agent = Agent(TestModel(), toolsets=[toolset])
     await agent.run("hello")
-    # TestModel exercises every available tool once.
+    # TestModel exercises every available tool once. The "context" tool is
+    # backed by the client's query_context verb.
     called = set(client.names())
-    assert {"recall", "context", "remember"}.issubset(called)
+    assert {"recall", "query_context", "remember"}.issubset(called)
 
 
 async def test_custom_tool_subset_limits_surface(

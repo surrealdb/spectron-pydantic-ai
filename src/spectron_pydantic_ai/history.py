@@ -75,11 +75,11 @@ def spectron_history_processor(
     async def process(ctx: RunContext[Any], messages: list[ModelMessage]) -> list[ModelMessage]:
         query = _latest_user_text(messages)
         if mode == "context":
-            results = await memory.context(query=query or None)
+            results = await memory.query_context(query or "")
         else:
             if not query:
                 return messages
-            results = await memory.recall(query, limit=limit)
+            results = await memory.recall(query, k=limit)
 
         block = format_results(results)
         if not block:
@@ -112,18 +112,20 @@ def _messages_to_transcript(messages: list[ModelMessage]) -> list[dict[str, str]
 async def store_messages(
     memory: SpectronMemory,
     messages: list[ModelMessage],
+    *,
+    extract: str = "whole_conversation",
     **kwargs: Any,
 ) -> Any:
     """Persist a list of model messages to Spectron.
 
-    The messages are reduced to a ``{"role", "content"}`` transcript and sent to
-    Spectron's ``upload`` operation. Extra keyword arguments are forwarded.
-    Returns ``None`` when there is nothing to store.
+    The messages are reduced to a ``{"role", "content"}`` transcript and stored
+    with Spectron's ``remember_many`` batch operation. Extra keyword arguments
+    are forwarded. Returns ``None`` when there is nothing to store.
     """
     transcript = _messages_to_transcript(messages)
     if not transcript:
         return None
-    return await memory.upload(messages=transcript, **kwargs)
+    return await memory.remember_many(transcript, extract=extract, **kwargs)
 
 
 async def store_run(
@@ -140,7 +142,7 @@ async def store_run(
         result: An ``AgentRunResult`` (the return value of ``agent.run``).
         include_all: Store the full history rather than only the new messages
             produced by this run.
-        kwargs: Extra keyword arguments forwarded to ``upload``.
+        kwargs: Extra keyword arguments forwarded to ``remember_many``.
     """
     messages = result.all_messages() if include_all else result.new_messages()
     return await store_messages(memory, messages, **kwargs)

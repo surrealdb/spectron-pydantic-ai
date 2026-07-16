@@ -11,25 +11,37 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-_RESULT_KEYS = ("results", "memories", "facts", "items", "data")
-_TEXT_KEYS = ("content", "text", "memory", "value", "summary")
+_RESULT_KEYS = ("results", "memories", "facts", "items", "data", "hits", "context")
+_TEXT_KEYS = ("content", "text", "memory", "value", "summary", "reflection")
+
+
+def _lookup(obj: Any, key: str) -> Any:
+    """Read ``key`` from a mapping or as an attribute of an object."""
+    if isinstance(obj, Mapping):
+        return obj.get(key)
+    return getattr(obj, key, None)
 
 
 def _record_to_text(record: Any) -> str:
     """Render a single record as a one-line string."""
     if isinstance(record, str):
         return record.strip()
+    for key in _TEXT_KEYS:
+        value = _lookup(record, key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
     if isinstance(record, Mapping):
-        for key in _TEXT_KEYS:
-            value = record.get(key)
-            if isinstance(value, str) and value.strip():
-                return value.strip()
         return ", ".join(f"{k}: {v}" for k, v in record.items())
     return str(record)
 
 
 def _iter_records(results: Any) -> list[Any]:
-    """Extract an iterable of records from a variety of result shapes."""
+    """Extract an iterable of records from a variety of result shapes.
+
+    Handles plain strings, mappings, sequences, and the SDK's dataclass
+    responses (which expose records under attributes such as ``hits`` or
+    ``context``).
+    """
     if results is None:
         return []
     if isinstance(results, str):
@@ -41,6 +53,10 @@ def _iter_records(results: Any) -> list[Any]:
         return [results]
     if isinstance(results, Sequence):
         return list(results)
+    for key in _RESULT_KEYS:
+        value = getattr(results, key, None)
+        if value is not None:
+            return _iter_records(value)
     return [results]
 
 

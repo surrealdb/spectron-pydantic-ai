@@ -5,10 +5,10 @@ memories from Spectron, and prepends them as context. The agent never has to
 decide to call a tool.
 
 Prerequisites:
-    pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]" "surrealdb[spectron]"
+    pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]"
 
 Environment variables:
-    SPECTRON_URL, SPECTRON_NAMESPACE, SPECTRON_TOKEN
+    SPECTRON_CONTEXT, SPECTRON_ENDPOINT, SPECTRON_API_KEY
     OPENAI_API_KEY
 """
 
@@ -25,14 +25,14 @@ from spectron_pydantic_ai import SpectronMemory, spectron_history_processor
 
 async def main() -> None:
     memory = SpectronMemory.connect(
-        url=os.environ["SPECTRON_URL"],
-        namespace=os.environ["SPECTRON_NAMESPACE"],
-        token=os.environ["SPECTRON_TOKEN"],
-        user_id="ada",
+        context=os.environ["SPECTRON_CONTEXT"],
+        endpoint=os.environ["SPECTRON_ENDPOINT"],
+        api_key=os.environ["SPECTRON_API_KEY"],
+        on_behalf_of="ada",
     )
 
     # Seed a fact so recall has something to find.
-    await memory.remember("Ada is allergic to peanuts.", memory_type="identity")
+    await memory.remember("Ada is allergic to peanuts.", memory_category="identity")
 
     processor = spectron_history_processor(memory, limit=5)
     agent = Agent(

@@ -10,8 +10,8 @@ class SpectronError(Exception):
 class SpectronImportError(SpectronError, ImportError):
     """Raised when the Spectron Python client cannot be imported.
 
-    Spectron is in early preview. The client ships as an extra of the SurrealDB
-    SDK and may not be installed or published yet in your environment.
+    The client ships in the base SurrealDB SDK (``surrealdb``, v3 alpha or
+    newer) and may not be installed in your environment.
     """
 
 

@@ -52,7 +52,7 @@ async def test_context_mode_uses_context_operation(
     agent = Agent(TestModel(), capabilities=[ProcessHistory(processor)])
     result = await agent.run("What are we working on?")
 
-    assert "context" in client.names()
+    assert "query_context" in client.names()
     injected = _system_texts(result.all_messages())
     assert any("travel planning" in text for text in injected)
 
@@ -88,7 +88,7 @@ async def test_store_messages_builds_transcript(
         ModelResponse(parts=[TextPart(content="Noted, window seats it is.")]),
     ]
     await store_messages(memory, messages)
-    transcript = client.last("upload")["messages"]
+    transcript = client.last("remember_many")["items"]
     assert transcript == [
         {"role": "user", "content": "I prefer window seats"},
         {"role": "assistant", "content": "Noted, window seats it is."},
@@ -98,7 +98,7 @@ async def test_store_messages_builds_transcript(
 async def test_store_messages_skips_empty(memory: SpectronMemory, client: FakeSpectron) -> None:
     result = await store_messages(memory, [])
     assert result is None
-    assert "upload" not in client.names()
+    assert "remember_many" not in client.names()
 
 
 async def test_store_run_persists_new_messages(
@@ -107,6 +107,6 @@ async def test_store_run_persists_new_messages(
     agent = Agent(TestModel())
     result = await agent.run("hello")
     await store_run(memory, result)
-    assert "upload" in client.names()
-    transcript = client.last("upload")["messages"]
+    assert "remember_many" in client.names()
+    transcript = client.last("remember_many")["items"]
     assert any(turn["role"] == "user" for turn in transcript)

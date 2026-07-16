@@ -7,10 +7,10 @@ This example combines all three surfaces:
 - ``store_run`` writes each turn back to Spectron so it survives restarts.
 
 Prerequisites:
-    pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]" "surrealdb[spectron]"
+    pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]"
 
 Environment variables:
-    SPECTRON_URL, SPECTRON_NAMESPACE, SPECTRON_TOKEN
+    SPECTRON_CONTEXT, SPECTRON_ENDPOINT, SPECTRON_API_KEY
     OPENAI_API_KEY
 """
 
@@ -27,11 +27,11 @@ from spectron_pydantic_ai import SpectronMemory, spectron_history_processor, sto
 
 async def chat(user_id: str, session_id: str, turns: list[str]) -> None:
     base = SpectronMemory.connect(
-        url=os.environ["SPECTRON_URL"],
-        namespace=os.environ["SPECTRON_NAMESPACE"],
-        token=os.environ["SPECTRON_TOKEN"],
+        context=os.environ["SPECTRON_CONTEXT"],
+        endpoint=os.environ["SPECTRON_ENDPOINT"],
+        api_key=os.environ["SPECTRON_API_KEY"],
     )
-    memory = base.scoped(user_id=user_id, session_id=session_id)
+    memory = base.scoped(on_behalf_of=user_id, session_id=session_id)
 
     agent = Agent(
         "openai:gpt-4o",

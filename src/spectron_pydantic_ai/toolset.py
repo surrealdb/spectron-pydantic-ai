@@ -36,7 +36,7 @@ def _make_recall(memory: SpectronMemory) -> Callable[..., Any]:
         Use this before answering to look up facts, user preferences, and
         details from earlier conversations. Returns a list of matching memories.
         """
-        results = await memory.recall(query, limit=limit)
+        results = await memory.recall(query, k=limit)
         return format_results(results) or "No relevant memories found."
 
     return recall
@@ -50,7 +50,7 @@ def _make_context(memory: SpectronMemory) -> Callable[..., Any]:
         currently about. Pass a query to focus the context, or leave it empty
         for the general working set.
         """
-        results = await memory.context(query=query or None)
+        results = await memory.query_context(query or "")
         return format_results(results) or "No active context."
 
     return context

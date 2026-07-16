@@ -4,68 +4,115 @@ from __future__ import annotations
 
 import pytest
 
-from spectron_pydantic_ai import SpectronImportError, SpectronMemory
+from spectron_pydantic_ai import SpectronError, SpectronImportError, SpectronMemory
 from tests.conftest import FakeSpectron
 
 
 async def test_scope_is_injected_into_calls(memory: SpectronMemory, client: FakeSpectron) -> None:
     await memory.remember("User prefers tea")
     kwargs = client.last("remember")
-    assert kwargs["content"] == "User prefers tea"
-    assert kwargs["user_id"] == "user-1"
+    assert kwargs["text"] == "User prefers tea"
+    assert kwargs["on_behalf_of"] == "user-1"
     assert kwargs["session_id"] == "session-1"
+    assert kwargs["scopes"] == "org/acme"
+
+
+async def test_reads_use_lens_not_scopes(memory: SpectronMemory, client: FakeSpectron) -> None:
+    await memory.recall("tea")
+    kwargs = client.last("recall")
+    assert kwargs["lens"] == "org/acme"
+    assert "scopes" not in kwargs
+    assert kwargs["session_id"] == "session-1"
+
+
+async def test_query_context_omits_session(memory: SpectronMemory, client: FakeSpectron) -> None:
+    await memory.query_context("trip")
+    kwargs = client.last("query_context")
+    assert kwargs["lens"] == "org/acme"
+    assert "session_id" not in kwargs
 
 
 async def test_none_values_are_not_sent(memory: SpectronMemory, client: FakeSpectron) -> None:
     await memory.recall("tea")
     kwargs = client.last("recall")
-    assert "limit" not in kwargs
-    assert "agent_id" not in kwargs
+    assert "k" not in kwargs
+    assert "mode" not in kwargs
 
 
 async def test_call_level_kwargs_override_scope(client: FakeSpectron) -> None:
-    memory = SpectronMemory(client, user_id="user-1")
-    await memory.recall("tea", user_id="user-2", limit=3)
+    memory = SpectronMemory(client, on_behalf_of="user-1")
+    await memory.recall("tea", on_behalf_of="user-2", k=3)
     kwargs = client.last("recall")
-    assert kwargs["user_id"] == "user-2"
-    assert kwargs["limit"] == 3
+    assert kwargs["on_behalf_of"] == "user-2"
+    assert kwargs["k"] == 3
 
 
 async def test_scoped_narrows_without_mutating(client: FakeSpectron) -> None:
-    base = SpectronMemory(client, user_id="user-1")
+    base = SpectronMemory(client, on_behalf_of="user-1")
     narrowed = base.scoped(session_id="session-9")
     assert base.session_id is None
     assert narrowed.session_id == "session-9"
-    assert narrowed.user_id == "user-1"
+    assert narrowed.on_behalf_of == "user-1"
     assert narrowed.client is base.client
 
 
 async def test_each_operation_dispatches(memory: SpectronMemory, client: FakeSpectron) -> None:
     await memory.remember("a")
     await memory.recall("b")
-    await memory.context()
-    await memory.reflect("c")
-    await memory.forget("d")
-    await memory.upload({"x": 1})
-    await memory.inspect()
+    await memory.query_context("c")
+    await memory.reflect("d")
+    await memory.forget("e")
+    await memory.upload(b"file-bytes")
+    await memory.inspect("ref:1")
     assert client.names() == [
         "remember",
         "recall",
-        "context",
+        "query_context",
         "reflect",
         "forget",
-        "upload",
+        "documents.upload",
         "inspect",
     ]
 
 
-async def test_upload_passes_data_when_given(memory: SpectronMemory, client: FakeSpectron) -> None:
-    await memory.upload({"doc": "hello"})
-    assert client.last("upload")["data"] == {"doc": "hello"}
+async def test_upload_routes_to_documents_namespace(
+    memory: SpectronMemory, client: FakeSpectron
+) -> None:
+    await memory.upload("/tmp/report.pdf", title="Report")
+    kwargs = client.last("documents.upload")
+    assert kwargs["path"] == "/tmp/report.pdf"
+    assert kwargs["title"] == "Report"
+    assert kwargs["scopes"] == "org/acme"
 
 
-def test_connect_raises_clear_error_without_sdk() -> None:
-    # The Spectron SDK is not installed in the test environment, so connecting
-    # should raise a helpful, typed error rather than a bare ImportError.
-    with pytest.raises(SpectronImportError):
-        SpectronMemory.connect("http://localhost:8000", "ns", "token")
+async def test_connect_wraps_built_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = FakeSpectron()
+    captured: dict[str, object] = {}
+
+    def fake_build(context: str, endpoint: str, api_key: str, **client_kwargs: object) -> object:
+        captured.update(
+            context=context, endpoint=endpoint, api_key=api_key, client_kwargs=client_kwargs
+        )
+        return fake
+
+    monkeypatch.setattr("spectron_pydantic_ai.memory.build_client", fake_build)
+    memory = SpectronMemory.connect(
+        "acme-prod",
+        "https://api.spectron.example",
+        "sk-1",
+        session_id="s1",
+        scope="org/acme",
+        timeout=5.0,
+    )
+    assert memory.client is fake
+    assert memory.session_id == "s1"
+    assert memory.scope == "org/acme"
+    assert captured["context"] == "acme-prod"
+    assert captured["endpoint"] == "https://api.spectron.example"
+    assert captured["api_key"] == "sk-1"
+    assert captured["client_kwargs"] == {"timeout": 5.0}
+
+
+def test_import_error_is_a_spectron_error() -> None:
+    assert issubclass(SpectronImportError, SpectronError)
+    assert issubclass(SpectronImportError, ImportError)

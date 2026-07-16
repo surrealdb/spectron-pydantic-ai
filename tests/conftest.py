@@ -1,7 +1,9 @@
 """Shared test fixtures.
 
 ``FakeSpectron`` implements the Spectron client protocol in memory so the whole
-package can be tested without a live Spectron service or a real model.
+package can be tested without a live Spectron service or a real model. It mirrors
+the real ``surrealdb.AsyncSpectron`` surface: headline verbs take their first
+argument positionally, and document uploads live under a ``documents`` namespace.
 """
 
 from __future__ import annotations
@@ -13,15 +15,29 @@ import pytest
 from spectron_pydantic_ai import SpectronMemory
 
 
+class FakeDocuments:
+    """Stand-in for the client's ``documents`` namespace."""
+
+    def __init__(self, parent: FakeSpectron) -> None:
+        self._parent = parent
+
+    async def upload(self, path: Any, **kwargs: Any) -> dict[str, Any]:
+        self._parent._record("documents.upload", {"path": path, **kwargs})
+        return {"ok": True}
+
+
 class FakeSpectron:
     """An in-memory stand-in for the Spectron async client.
 
-    Every call is recorded in ``calls`` as a ``(name, kwargs)`` tuple. Return
-    values are canned so assertions can check formatting and dispatch.
+    Every call is recorded in ``calls`` as a ``(name, kwargs)`` tuple, with the
+    positional argument folded into the recorded kwargs under its parameter
+    name. Return values are canned so assertions can check formatting and
+    dispatch.
     """
 
     def __init__(self) -> None:
         self.calls: list[tuple[str, dict[str, Any]]] = []
+        self.documents = FakeDocuments(self)
 
     def _record(self, name: str, kwargs: dict[str, Any]) -> None:
         self.calls.append((name, kwargs))
@@ -35,32 +51,32 @@ class FakeSpectron:
                 return kwargs
         raise AssertionError(f"{name!r} was not called")
 
-    async def remember(self, **kwargs: Any) -> dict[str, Any]:
-        self._record("remember", kwargs)
+    async def remember(self, text: str | None = None, **kwargs: Any) -> dict[str, Any]:
+        self._record("remember", {"text": text, **kwargs})
         return {"ok": True}
 
-    async def recall(self, **kwargs: Any) -> dict[str, Any]:
-        self._record("recall", kwargs)
+    async def remember_many(self, items: Any, **kwargs: Any) -> dict[str, Any]:
+        self._record("remember_many", {"items": items, **kwargs})
+        return {"ok": True}
+
+    async def recall(self, query: str, **kwargs: Any) -> dict[str, Any]:
+        self._record("recall", {"query": query, **kwargs})
         return {"results": ["User prefers tea", "User lives in Berlin"]}
 
-    async def context(self, **kwargs: Any) -> list[str]:
-        self._record("context", kwargs)
+    async def query_context(self, query: str = "", **kwargs: Any) -> list[str]:
+        self._record("query_context", {"query": query, **kwargs})
         return ["active topic: travel planning"]
 
-    async def reflect(self, **kwargs: Any) -> str:
-        self._record("reflect", kwargs)
+    async def reflect(self, query: str, **kwargs: Any) -> str:
+        self._record("reflect", {"query": query, **kwargs})
         return "The user is planning a trip and prefers tea."
 
-    async def forget(self, **kwargs: Any) -> dict[str, Any]:
-        self._record("forget", kwargs)
+    async def forget(self, query: str, **kwargs: Any) -> dict[str, Any]:
+        self._record("forget", {"query": query, **kwargs})
         return {"ok": True}
 
-    async def upload(self, **kwargs: Any) -> dict[str, Any]:
-        self._record("upload", kwargs)
-        return {"ok": True}
-
-    async def inspect(self, **kwargs: Any) -> dict[str, Any]:
-        self._record("inspect", kwargs)
+    async def inspect(self, ref: str, **kwargs: Any) -> dict[str, Any]:
+        self._record("inspect", {"ref": ref, **kwargs})
         return {"memories": 2}
 
 
@@ -71,4 +87,9 @@ def client() -> FakeSpectron:
 
 @pytest.fixture
 def memory(client: FakeSpectron) -> SpectronMemory:
-    return SpectronMemory(client, user_id="user-1", session_id="session-1")
+    return SpectronMemory(
+        client,
+        session_id="session-1",
+        scope="org/acme",
+        on_behalf_of="user-1",
+    )

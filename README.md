@@ -19,11 +19,11 @@ It gives you three surfaces, which you can use on their own or together:
 
 ## Status
 
-Spectron is in early preview. The Python client ships as an extra of the
-SurrealDB SDK (`pip install "surrealdb[spectron]"`). Until you have access to a
-Spectron instance, you can still install this package, wire it into an agent,
-and run the test suite: every Spectron call goes through a small client protocol
-that is easy to fake.
+Spectron is in early preview. Its Python client ships in the base SurrealDB SDK
+(`surrealdb`, v3 alpha or newer), which installs automatically as a dependency
+of this package. Until you have access to a Spectron instance, you can still
+install this package, wire it into an agent, and run the test suite: every
+Spectron call goes through a small client protocol that is easy to fake.
 
 ## Install
 
@@ -31,10 +31,11 @@ that is easy to fake.
 pip install spectron-pydantic-ai
 ```
 
-To run against a live Spectron instance and a model provider:
+To run against a live Spectron instance and a model provider (the Spectron
+client is bundled in `surrealdb`, installed automatically):
 
 ```bash
-pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]" "surrealdb[spectron]"
+pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]"
 ```
 
 ## Quickstart
@@ -46,10 +47,10 @@ from spectron_pydantic_ai import SpectronMemory, SpectronToolset
 
 async def main():
     memory = SpectronMemory.connect(
-        url="https://your-spectron-instance",
-        namespace="your-namespace",
-        token="your-token",
-        user_id="ada",
+        context="your-context",
+        endpoint="https://your-spectron-instance",
+        api_key="your-api-key",
+        on_behalf_of="ada",
     )
     agent = Agent("openai:gpt-4o", toolsets=[SpectronToolset(memory)])
     result = await agent.run("Remember that I prefer window seats.")
@@ -95,21 +96,22 @@ await store_run(memory, result)
 
 ## Scoping and multi-tenancy
 
-`SpectronMemory` carries a scope (`user_id`, `session_id`, `agent_id`) that is
-added to every operation. One connection can serve many users and sessions by
-creating narrowed views:
+`SpectronMemory` carries a scope (`session_id`, `scope`, `on_behalf_of`) that is
+added to every operation — `scope` is applied as `scopes` on writes and `lens`
+on reads. One connection can serve many users and sessions by creating narrowed
+views:
 
 ```python
 base = SpectronMemory(client)
-alice = base.scoped(user_id="alice", session_id="s1")
-bob = base.scoped(user_id="bob", session_id="s2")
+alice = base.scoped(on_behalf_of="alice", session_id="s1")
+bob = base.scoped(on_behalf_of="bob", session_id="s2")
 ```
 
 ## API
 
 | Name | Purpose |
 | --- | --- |
-| `SpectronMemory` | Scoped wrapper over the Spectron client. `connect(...)`, `scoped(...)`, and the seven operations. |
+| `SpectronMemory` | Scoped wrapper over the Spectron client. `connect(...)`, `scoped(...)`, and the memory verbs (`remember`, `remember_many`, `recall`, `query_context`, `reflect`, `forget`, `inspect`, `upload`). |
 | `SpectronToolset` | Pydantic AI toolset exposing memory operations as tools. |
 | `spectron_history_processor` | Build a history processor for auto-recall. |
 | `store_run`, `store_messages` | Persist messages back to Spectron. |
