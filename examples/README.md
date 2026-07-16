@@ -4,24 +4,25 @@ Runnable examples for `spectron-pydantic-ai`.
 
 ## Prerequisites
 
-Install the package with a Pydantic AI model provider and the Spectron client:
+Install the package with a Pydantic AI model provider. The Spectron client is
+bundled in `surrealdb` (v3 alpha or newer) and installs automatically:
 
 ```bash
-pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]" "surrealdb[spectron]"
+pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]"
 ```
 
 Set the connection and model environment variables:
 
 ```bash
-export SPECTRON_URL="https://your-spectron-instance"
-export SPECTRON_NAMESPACE="your-namespace"
-export SPECTRON_TOKEN="your-token"
+export SPECTRON_CONTEXT="your-context"
+export SPECTRON_ENDPOINT="https://your-spectron-instance"
+export SPECTRON_API_KEY="your-api-key"
 export OPENAI_API_KEY="sk-..."
 ```
 
-Spectron is in early preview. If the `surrealdb[spectron]` client is not yet
-available in your environment, the examples that connect to a live service will
-not run, but the package itself installs and its tests pass without it.
+Spectron is in early preview. Without access to a live Spectron instance, the
+examples that connect to a service will not run, but the package itself installs
+and its tests pass without one.
 
 ## Files
 

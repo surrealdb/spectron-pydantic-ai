@@ -1148,7 +1148,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic-ai-slim", specifier = ">=2.7" },
-    { name = "surrealdb", specifier = ">=3.0.0a1" },
+    { name = "surrealdb", specifier = ">=3.0.0a2" },
 ]
 
 [package.metadata.requires-dev]
@@ -1161,7 +1161,7 @@ dev = [
 
 [[package]]
 name = "surrealdb"
-version = "3.0.0a1"
+version = "3.0.0a2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1170,9 +1170,9 @@ dependencies = [
     { name = "typing-extensions", marker = "python_full_version < '3.12'" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6d/e9/ed9c63c71d945e4708047e60be9f521c05170cc26b1ea2a810a18fc8092c/surrealdb-3.0.0a1.tar.gz", hash = "sha256:66b0c3b5720d2c33f1f872b8a846ccf6e8fb69e934fffa27bfc9e836d3df76d0", size = 411424, upload-time = "2026-07-13T22:22:12.021Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c5/4f/2f580d9cec0346625a23dcfd030b061d76e8eb56af03ff243a90b836ac65/surrealdb-3.0.0a2.tar.gz", hash = "sha256:2f15b2468947e7c4f328026bec669e89dc0789ffcb51ed4f91c42f82fa44b570", size = 437086, upload-time = "2026-07-16T12:21:14.484Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0c/ce/2456ca887fdc8e517d9cfc232dab29c0c78a3854d8580979958114dea023/surrealdb-3.0.0a1-py3-none-any.whl", hash = "sha256:65a0c386a94c6d2e7d6ef138ff7c16c277de7417444458bb08ee6c55d8305e84", size = 127131, upload-time = "2026-07-13T22:22:10.605Z" },
+    { url = "https://files.pythonhosted.org/packages/38/23/053d7804371770da3a1946a844c7236aaf341454b0d29f30064c0c3a792c/surrealdb-3.0.0a2-py3-none-any.whl", hash = "sha256:03828b081056071e6af1ff6face74e20e7b5ee33ab63663d91deed67e03a003c", size = 132823, upload-time = "2026-07-16T12:21:12.819Z" },
 ]
 
 [[package]]

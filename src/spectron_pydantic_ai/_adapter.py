@@ -5,8 +5,8 @@ depends only on the :class:`SpectronClient` protocol, so it can be tested with a
 fake client and stays decoupled from the exact SDK surface.
 
 Spectron ships in the base ``surrealdb`` package (v3 alpha or newer): the async
-client is ``surrealdb.AsyncSpectron``. If it cannot be imported, :func:`build_client`
-raises :class:`SpectronImportError` with a clear hint.
+client is ``surrealdb.spectron.AsyncSpectron``. If it cannot be imported,
+:func:`build_client` raises :class:`SpectronImportError` with a clear hint.
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ _INSTALL_HINT = (
 class SpectronClient(Protocol):
     """The async Spectron operations this package relies on.
 
-    The concrete client is ``surrealdb.AsyncSpectron``. Method arguments are
+    The concrete client is ``surrealdb.spectron.AsyncSpectron``. Method arguments are
     passed through as keyword arguments, so this protocol stays deliberately
     permissive. ``documents`` is the SDK's document namespace, used for uploads.
     """
@@ -72,7 +72,7 @@ def build_client(
         SpectronImportError: If the Spectron client cannot be imported.
     """
     try:
-        from surrealdb import AsyncSpectron
+        from surrealdb.spectron import AsyncSpectron
     except ImportError as exc:  # pragma: no cover - depends on the environment
         raise SpectronImportError(_INSTALL_HINT) from exc
 

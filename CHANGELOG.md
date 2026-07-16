@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2026-07-16
 
-Initial release. Targets the Spectron client bundled in `surrealdb >= 3.0.0a1`
+Initial release. Targets the Spectron client bundled in `surrealdb >= 3.0.0a2`
 (`surrealdb.AsyncSpectron`).
 
 ### Added
