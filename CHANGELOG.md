@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-09
+
+Renamed from `spectron-pydantic-ai` to `agent-memory-pydantic-ai`, and fixed the
+SurrealDB SDK imports that `surrealdb.py`'s package split had already broken.
+
+### Changed
+
+- **BREAKING** Package renamed to `agent-memory-pydantic-ai`; the import root is
+  now `agent_memory_pydantic_ai`.
+- **BREAKING** Every `Spectron*` name loses the product prefix for `AgentMemory*`:
+  `SpectronMemory` -> `AgentMemoryMemory`, `SpectronToolset` -> `AgentMemoryToolset`,
+  `SpectronClient` -> `AgentMemoryClient`, `SpectronError` -> `AgentMemoryError`,
+  `SpectronImportError` -> `AgentMemoryImportError`,
+  `spectron_history_processor` -> `agent_memory_history_processor`.
+- **BREAKING** Requires `surrealdb[memory]>=3.0.0b8`. The client moved out of the
+  `surrealdb` wheel into its own `surrealdb-memory` distribution, so
+  `surrealdb.spectron` no longer exists and `AsyncSpectron` is now `AsyncMemory`.
+
+### Fixed
+
+- Imports of `surrealdb.spectron`, which raised `ModuleNotFoundError` against any
+  `surrealdb` release from 3.0.0b8 onward.
+
 ## [0.1.0] - 2026-07-16
 
 Initial release. Targets the Spectron client bundled in `surrealdb >= 3.0.0a2`

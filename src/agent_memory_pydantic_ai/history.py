@@ -2,7 +2,7 @@
 
 The history processor injects relevant memory before each model request, so the
 agent gets baseline context without having to call a tool. The persistence
-helpers write a run's messages back to Spectron so conversations survive across
+helpers write a run's messages back to AgentMemory so conversations survive across
 sessions.
 """
 
@@ -22,11 +22,11 @@ from pydantic_ai import (
 )
 
 from ._format import format_results
-from .memory import SpectronMemory
+from .memory import AgentMemoryMemory
 
 HistoryProcessor = Callable[[RunContext[Any], list[ModelMessage]], Awaitable[list[ModelMessage]]]
 
-DEFAULT_HEADER = "Relevant memory from Spectron:"
+DEFAULT_HEADER = "Relevant memory from AgentMemory:"
 
 
 def _latest_user_text(messages: list[ModelMessage]) -> str | None:
@@ -39,8 +39,8 @@ def _latest_user_text(messages: list[ModelMessage]) -> str | None:
     return None
 
 
-def spectron_history_processor(
-    memory: SpectronMemory,
+def agent_memory_history_processor(
+    memory: AgentMemoryMemory,
     *,
     mode: Literal["recall", "context"] = "recall",
     limit: int = 8,
@@ -110,16 +110,16 @@ def _messages_to_transcript(messages: list[ModelMessage]) -> list[dict[str, str]
 
 
 async def store_messages(
-    memory: SpectronMemory,
+    memory: AgentMemoryMemory,
     messages: list[ModelMessage],
     *,
     extract: str = "whole_conversation",
     **kwargs: Any,
 ) -> Any:
-    """Persist a list of model messages to Spectron.
+    """Persist a list of model messages to AgentMemory.
 
     The messages are reduced to a ``{"role", "content"}`` transcript and stored
-    with Spectron's ``remember_many`` batch operation. Extra keyword arguments
+    with AgentMemory's ``remember_many`` batch operation. Extra keyword arguments
     are forwarded. Returns ``None`` when there is nothing to store.
     """
     transcript = _messages_to_transcript(messages)
@@ -129,7 +129,7 @@ async def store_messages(
 
 
 async def store_run(
-    memory: SpectronMemory,
+    memory: AgentMemoryMemory,
     result: Any,
     *,
     include_all: bool = False,
@@ -148,4 +148,4 @@ async def store_run(
     return await store_messages(memory, messages, **kwargs)
 
 
-__all__ = ["HistoryProcessor", "spectron_history_processor", "store_messages", "store_run"]
+__all__ = ["HistoryProcessor", "agent_memory_history_processor", "store_messages", "store_run"]

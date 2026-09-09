@@ -1,26 +1,26 @@
 # Examples
 
-Runnable examples for `spectron-pydantic-ai`.
+Runnable examples for `agent-memory-pydantic-ai`.
 
 ## Prerequisites
 
-Install the package with a Pydantic AI model provider. The Spectron client is
+Install the package with a Pydantic AI model provider. The AgentMemory client is
 bundled in `surrealdb` (v3 alpha or newer) and installs automatically:
 
 ```bash
-pip install "spectron-pydantic-ai" "pydantic-ai-slim[openai]"
+pip install "agent-memory-pydantic-ai" "pydantic-ai-slim[openai]"
 ```
 
 Set the connection and model environment variables:
 
 ```bash
-export SPECTRON_CONTEXT="your-context"
-export SPECTRON_ENDPOINT="https://your-spectron-instance"
-export SPECTRON_API_KEY="your-api-key"
+export AGENT_MEMORY_CONTEXT="your-context"
+export AGENT_MEMORY_ENDPOINT="https://your-agent_memory-instance"
+export AGENT_MEMORY_API_KEY="your-api-key"
 export OPENAI_API_KEY="sk-..."
 ```
 
-Spectron is in early preview. Without access to a live Spectron instance, the
+AgentMemory is in early preview. Without access to a live AgentMemory instance, the
 examples that connect to a service will not run, but the package itself installs
 and its tests pass without one.
 

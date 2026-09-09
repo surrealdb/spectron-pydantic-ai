@@ -1,8 +1,8 @@
 """Shared test fixtures.
 
-``FakeSpectron`` implements the Spectron client protocol in memory so the whole
-package can be tested without a live Spectron service or a real model. It mirrors
-the real ``surrealdb.AsyncSpectron`` surface: headline verbs take their first
+``FakeAgentMemory`` implements the AgentMemory client protocol in memory so the whole
+package can be tested without a live AgentMemory service or a real model. It mirrors
+the real ``surrealdb.AsyncMemory`` surface: headline verbs take their first
 argument positionally, and document uploads live under a ``documents`` namespace.
 """
 
@@ -12,13 +12,13 @@ from typing import Any
 
 import pytest
 
-from spectron_pydantic_ai import SpectronMemory
+from agent_memory_pydantic_ai import AgentMemoryMemory
 
 
 class FakeDocuments:
     """Stand-in for the client's ``documents`` namespace."""
 
-    def __init__(self, parent: FakeSpectron) -> None:
+    def __init__(self, parent: FakeAgentMemory) -> None:
         self._parent = parent
 
     async def upload(self, path: Any, **kwargs: Any) -> dict[str, Any]:
@@ -26,8 +26,8 @@ class FakeDocuments:
         return {"ok": True}
 
 
-class FakeSpectron:
-    """An in-memory stand-in for the Spectron async client.
+class FakeAgentMemory:
+    """An in-memory stand-in for the AgentMemory async client.
 
     Every call is recorded in ``calls`` as a ``(name, kwargs)`` tuple, with the
     positional argument folded into the recorded kwargs under its parameter
@@ -81,13 +81,13 @@ class FakeSpectron:
 
 
 @pytest.fixture
-def client() -> FakeSpectron:
-    return FakeSpectron()
+def client() -> FakeAgentMemory:
+    return FakeAgentMemory()
 
 
 @pytest.fixture
-def memory(client: FakeSpectron) -> SpectronMemory:
-    return SpectronMemory(
+def memory(client: FakeAgentMemory) -> AgentMemoryMemory:
+    return AgentMemoryMemory(
         client,
         session_id="session-1",
         scope="org/acme",

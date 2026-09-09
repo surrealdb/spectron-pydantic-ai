@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in improving `spectron-pydantic-ai`.
+Thanks for your interest in improving `agent-memory-pydantic-ai`.
 
 ## Development setup
 
@@ -26,11 +26,11 @@ fixes.
 
 ## Guidelines
 
-- Keep the Spectron SDK import confined to `src/spectron_pydantic_ai/_adapter.py`.
-  Everything else depends on the `SpectronClient` protocol so it can be tested
+- Keep the AgentMemory SDK import confined to `src/agent_memory_pydantic_ai/_adapter.py`.
+  Everything else depends on the `AgentMemoryClient` protocol so it can be tested
   with a fake client.
 - Add or update tests for any behaviour change. Tests must pass without a live
-  Spectron service or a real model.
+  AgentMemory service or a real model.
 - Do not use em-dashes in code, comments, docstrings, or documentation.
 
 ## Pull requests

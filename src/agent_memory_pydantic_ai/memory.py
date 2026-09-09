@@ -1,27 +1,27 @@
-"""High-level, scoped wrapper around a Spectron client.
+"""High-level, scoped wrapper around a AgentMemory client.
 
-:class:`SpectronMemory` carries a memory scope and forwards Spectron operations
+:class:`AgentMemoryMemory` carries a memory scope and forwards AgentMemory operations
 to the underlying client, merging the scope into every call. The scope maps
 onto the SDK's own primitives:
 
 - ``session_id`` — the conversation, forwarded to the verbs that accept it
   (``remember``, ``recall``, ``remember_many``).
-- ``scope`` — a Spectron ``ScopeArg`` forwarded as ``scopes=`` on writes and as
+- ``scope`` — a AgentMemory ``ScopeArg`` forwarded as ``scopes=`` on writes and as
   ``lens=`` on reads, so one wrapper can partition memory by tenant/topic.
 - ``on_behalf_of`` — the principal a call acts for, forwarded to every verb.
 
 One connection can serve many users and sessions by creating narrowed views
-with :meth:`SpectronMemory.scoped`.
+with :meth:`AgentMemoryMemory.scoped`.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ._adapter import SpectronClient, build_client
+from ._adapter import AgentMemoryClient, build_client
 
 if TYPE_CHECKING:
-    from surrealdb.spectron import ScopeArg
+    from surrealdb.memory import ScopeArg
 else:  # runtime: keep the package importable without the SDK installed
     ScopeArg = Any
 
@@ -31,13 +31,13 @@ def _prune(mapping: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in mapping.items() if value is not None}
 
 
-class SpectronMemory:
-    """Scoped access to Spectron memory operations.
+class AgentMemoryMemory:
+    """Scoped access to AgentMemory memory operations.
 
     Args:
-        client: An object implementing the Spectron client protocol.
+        client: An object implementing the AgentMemory client protocol.
         session_id: Optional conversation or session identifier.
-        scope: Optional Spectron scope (``ScopeArg``) applied as ``scopes`` on
+        scope: Optional AgentMemory scope (``ScopeArg``) applied as ``scopes`` on
             writes and ``lens`` on reads.
         on_behalf_of: Optional principal the operations act for.
 
@@ -48,7 +48,7 @@ class SpectronMemory:
 
     def __init__(
         self,
-        client: SpectronClient,
+        client: AgentMemoryClient,
         *,
         session_id: str | None = None,
         scope: ScopeArg = None,
@@ -70,15 +70,15 @@ class SpectronMemory:
         scope: ScopeArg = None,
         on_behalf_of: str | None = None,
         **client_kwargs: Any,
-    ) -> SpectronMemory:
+    ) -> AgentMemoryMemory:
         """Build a client from connection details and wrap it.
 
         Args:
-            context: Spectron context id (e.g. ``"acme-prod"``).
-            endpoint: Full URL of the Spectron host.
+            context: AgentMemory context id (e.g. ``"acme-prod"``).
+            endpoint: Full URL of the AgentMemory host.
             api_key: Bearer token.
             session_id: Optional conversation or session identifier.
-            scope: Optional Spectron scope applied to every operation.
+            scope: Optional AgentMemory scope applied to every operation.
             on_behalf_of: Optional principal the operations act for.
             client_kwargs: Extra keyword arguments forwarded to the client
                 (``timeout``, ``max_retries``, ``transport``).
@@ -92,13 +92,13 @@ class SpectronMemory:
         session_id: str | None = None,
         scope: ScopeArg = None,
         on_behalf_of: str | None = None,
-    ) -> SpectronMemory:
+    ) -> AgentMemoryMemory:
         """Return a new view over the same client with a narrowed scope.
 
         Only the values you pass are changed. Unspecified values are inherited
         from the current instance.
         """
-        return SpectronMemory(
+        return AgentMemoryMemory(
             self.client,
             session_id=session_id if session_id is not None else self.session_id,
             scope=scope if scope is not None else self.scope,
@@ -142,7 +142,7 @@ class SpectronMemory:
             text: The fact, preference, or note to store.
             infer: Extraction path (``"full"``, ``"triples"``, ``"preview"``,
                 ``"none"``).
-            memory_category: Optional Spectron memory category.
+            memory_category: Optional AgentMemory memory category.
             labels: Optional ``key=value`` labels recorded on the rows.
             kwargs: Extra keyword arguments forwarded to the client.
         """
@@ -283,7 +283,7 @@ class SpectronMemory:
         source: str | None = None,
         **kwargs: Any,
     ) -> Any:
-        """Ingest a document via the Spectron documents namespace.
+        """Ingest a document via the AgentMemory documents namespace.
 
         Args:
             path: File path, file-like object, or bytes to upload.
@@ -306,4 +306,4 @@ class SpectronMemory:
         return await self.client.documents.upload(path, **payload)
 
 
-__all__ = ["SpectronMemory"]
+__all__ = ["AgentMemoryMemory"]
