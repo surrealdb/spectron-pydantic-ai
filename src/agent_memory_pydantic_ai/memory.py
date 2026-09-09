@@ -1,17 +1,17 @@
-"""High-level, scoped wrapper around a AgentMemory client.
+"""High-level, scoped wrapper around an Agent Memory client.
 
-:class:`AgentMemoryMemory` carries a memory scope and forwards AgentMemory operations
+:class:`Agent Memory` carries a memory scope and forwards Agent Memory operations
 to the underlying client, merging the scope into every call. The scope maps
 onto the SDK's own primitives:
 
 - ``session_id`` — the conversation, forwarded to the verbs that accept it
   (``remember``, ``recall``, ``remember_many``).
-- ``scope`` — a AgentMemory ``ScopeArg`` forwarded as ``scopes=`` on writes and as
+- ``scope`` — an Agent Memory ``ScopeArg`` forwarded as ``scopes=`` on writes and as
   ``lens=`` on reads, so one wrapper can partition memory by tenant/topic.
 - ``on_behalf_of`` — the principal a call acts for, forwarded to every verb.
 
 One connection can serve many users and sessions by creating narrowed views
-with :meth:`AgentMemoryMemory.scoped`.
+with :meth:`Agent Memory.scoped`.
 """
 
 from __future__ import annotations
@@ -31,13 +31,13 @@ def _prune(mapping: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in mapping.items() if value is not None}
 
 
-class AgentMemoryMemory:
-    """Scoped access to AgentMemory memory operations.
+class AgentMemory:
+    """Scoped access to Agent Memory operations.
 
     Args:
-        client: An object implementing the AgentMemory client protocol.
+        client: An object implementing the Agent Memory client protocol.
         session_id: Optional conversation or session identifier.
-        scope: Optional AgentMemory scope (``ScopeArg``) applied as ``scopes`` on
+        scope: Optional Agent Memory scope (``ScopeArg``) applied as ``scopes`` on
             writes and ``lens`` on reads.
         on_behalf_of: Optional principal the operations act for.
 
@@ -70,15 +70,15 @@ class AgentMemoryMemory:
         scope: ScopeArg = None,
         on_behalf_of: str | None = None,
         **client_kwargs: Any,
-    ) -> AgentMemoryMemory:
+    ) -> AgentMemory:
         """Build a client from connection details and wrap it.
 
         Args:
-            context: AgentMemory context id (e.g. ``"acme-prod"``).
-            endpoint: Full URL of the AgentMemory host.
+            context: Agent Memory context id (e.g. ``"acme-prod"``).
+            endpoint: Full URL of the Agent Memory host.
             api_key: Bearer token.
             session_id: Optional conversation or session identifier.
-            scope: Optional AgentMemory scope applied to every operation.
+            scope: Optional Agent Memory scope applied to every operation.
             on_behalf_of: Optional principal the operations act for.
             client_kwargs: Extra keyword arguments forwarded to the client
                 (``timeout``, ``max_retries``, ``transport``).
@@ -92,13 +92,13 @@ class AgentMemoryMemory:
         session_id: str | None = None,
         scope: ScopeArg = None,
         on_behalf_of: str | None = None,
-    ) -> AgentMemoryMemory:
+    ) -> AgentMemory:
         """Return a new view over the same client with a narrowed scope.
 
         Only the values you pass are changed. Unspecified values are inherited
         from the current instance.
         """
-        return AgentMemoryMemory(
+        return AgentMemory(
             self.client,
             session_id=session_id if session_id is not None else self.session_id,
             scope=scope if scope is not None else self.scope,
@@ -142,7 +142,7 @@ class AgentMemoryMemory:
             text: The fact, preference, or note to store.
             infer: Extraction path (``"full"``, ``"triples"``, ``"preview"``,
                 ``"none"``).
-            memory_category: Optional AgentMemory memory category.
+            memory_category: Optional Agent Memory category.
             labels: Optional ``key=value`` labels recorded on the rows.
             kwargs: Extra keyword arguments forwarded to the client.
         """
@@ -283,7 +283,7 @@ class AgentMemoryMemory:
         source: str | None = None,
         **kwargs: Any,
     ) -> Any:
-        """Ingest a document via the AgentMemory documents namespace.
+        """Ingest a document via the Agent Memory documents namespace.
 
         Args:
             path: File path, file-like object, or bytes to upload.
@@ -306,4 +306,4 @@ class AgentMemoryMemory:
         return await self.client.documents.upload(path, **payload)
 
 
-__all__ = ["AgentMemoryMemory"]
+__all__ = ["AgentMemory"]

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "agent-memory-pydantic-ai"
 version = "0.2.0"
-description = "AgentMemory agent memory for Pydantic AI: toolset, auto-recall history processor, and persistence helpers."
+description = "Agent Memory for Pydantic AI: toolset, auto-recall history processor, and persistence helpers."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
@@ -13,11 +13,10 @@ license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "SurrealDB" }]
 keywords = [
     "surrealdb",
-    "agent_memory",
-    "pydantic-ai",
     "agent-memory",
+    "pydantic-ai",
     "llm",
-    "ai-agents",
+    "ai-agents"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

@@ -26,11 +26,11 @@ fixes.
 
 ## Guidelines
 
-- Keep the AgentMemory SDK import confined to `src/agent_memory_pydantic_ai/_adapter.py`.
+- Keep the Agent Memory SDK import confined to `src/agent_memory_pydantic_ai/_adapter.py`.
   Everything else depends on the `AgentMemoryClient` protocol so it can be tested
   with a fake client.
 - Add or update tests for any behaviour change. Tests must pass without a live
-  AgentMemory service or a real model.
+  Agent Memory service or a real model.
 - Do not use em-dashes in code, comments, docstrings, or documentation.
 
 ## Pull requests

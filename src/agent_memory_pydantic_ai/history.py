@@ -2,7 +2,7 @@
 
 The history processor injects relevant memory before each model request, so the
 agent gets baseline context without having to call a tool. The persistence
-helpers write a run's messages back to AgentMemory so conversations survive across
+helpers write a run's messages back to Agent Memory so conversations survive across
 sessions.
 """
 
@@ -22,7 +22,7 @@ from pydantic_ai import (
 )
 
 from ._format import format_results
-from .memory import AgentMemoryMemory
+from .memory import AgentMemory
 
 HistoryProcessor = Callable[[RunContext[Any], list[ModelMessage]], Awaitable[list[ModelMessage]]]
 
@@ -40,7 +40,7 @@ def _latest_user_text(messages: list[ModelMessage]) -> str | None:
 
 
 def agent_memory_history_processor(
-    memory: AgentMemoryMemory,
+    memory: AgentMemory,
     *,
     mode: Literal["recall", "context"] = "recall",
     limit: int = 8,
@@ -110,16 +110,16 @@ def _messages_to_transcript(messages: list[ModelMessage]) -> list[dict[str, str]
 
 
 async def store_messages(
-    memory: AgentMemoryMemory,
+    memory: AgentMemory,
     messages: list[ModelMessage],
     *,
     extract: str = "whole_conversation",
     **kwargs: Any,
 ) -> Any:
-    """Persist a list of model messages to AgentMemory.
+    """Persist a list of model messages to Agent Memory.
 
     The messages are reduced to a ``{"role", "content"}`` transcript and stored
-    with AgentMemory's ``remember_many`` batch operation. Extra keyword arguments
+    with Agent Memory's ``remember_many`` batch operation. Extra keyword arguments
     are forwarded. Returns ``None`` when there is nothing to store.
     """
     transcript = _messages_to_transcript(messages)
@@ -129,7 +129,7 @@ async def store_messages(
 
 
 async def store_run(
-    memory: AgentMemoryMemory,
+    memory: AgentMemory,
     result: Any,
     *,
     include_all: bool = False,

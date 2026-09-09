@@ -17,7 +17,7 @@ SurrealDB SDK imports that `surrealdb.py`'s package split had already broken.
 - **BREAKING** Package renamed to `agent-memory-pydantic-ai`; the import root is
   now `agent_memory_pydantic_ai`.
 - **BREAKING** Every `Spectron*` name loses the product prefix for `AgentMemory*`:
-  `SpectronMemory` -> `AgentMemoryMemory`, `SpectronToolset` -> `AgentMemoryToolset`,
+  `SpectronMemory` -> `AgentMemory`, `SpectronToolset` -> `AgentMemoryToolset`,
   `SpectronClient` -> `AgentMemoryClient`, `SpectronError` -> `AgentMemoryError`,
   `SpectronImportError` -> `AgentMemoryImportError`,
   `spectron_history_processor` -> `agent_memory_history_processor`.
@@ -53,5 +53,5 @@ Initial release. Targets the Spectron client bundled in `surrealdb >= 3.0.0a2`
   exceptions.
 - Examples for the toolset, auto-recall, and a persistent multi-turn chat.
 
-[Unreleased]: https://github.com/surrealdb-dev/spectron-pydantic-ai/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/surrealdb-dev/spectron-pydantic-ai/releases/tag/v0.1.0
+[Unreleased]: https://github.com/surrealdb/agent-memory-pydantic-ai/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/surrealdb/agent-memory-pydantic-ai/releases/tag/v0.1.0

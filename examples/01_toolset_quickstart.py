@@ -1,4 +1,4 @@
-"""Quickstart: give a Pydantic AI agent AgentMemory memory tools.
+"""Quickstart: give a Pydantic AI agent Agent Memory tools.
 
 The agent decides when to recall or remember. Run it twice: in the first run it
 stores a preference, in the second run it recalls it.
@@ -18,11 +18,11 @@ import os
 
 from pydantic_ai import Agent
 
-from agent_memory_pydantic_ai import AgentMemoryMemory, AgentMemoryToolset
+from agent_memory_pydantic_ai import AgentMemory, AgentMemoryToolset
 
 
 async def main() -> None:
-    memory = AgentMemoryMemory.connect(
+    memory = AgentMemory.connect(
         context=os.environ["AGENT_MEMORY_CONTEXT"],
         endpoint=os.environ["AGENT_MEMORY_ENDPOINT"],
         api_key=os.environ["AGENT_MEMORY_API_KEY"],

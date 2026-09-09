@@ -4,7 +4,7 @@ Runnable examples for `agent-memory-pydantic-ai`.
 
 ## Prerequisites
 
-Install the package with a Pydantic AI model provider. The AgentMemory client is
+Install the package with a Pydantic AI model provider. The Agent Memory client is
 bundled in `surrealdb` (v3 alpha or newer) and installs automatically:
 
 ```bash
@@ -20,7 +20,7 @@ export AGENT_MEMORY_API_KEY="your-api-key"
 export OPENAI_API_KEY="sk-..."
 ```
 
-AgentMemory is in early preview. Without access to a live AgentMemory instance, the
+Agent Memory is in early preview. Without access to a live Agent Memory instance, the
 examples that connect to a service will not run, but the package itself installs
 and its tests pass without one.
 

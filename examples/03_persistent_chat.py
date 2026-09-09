@@ -4,7 +4,7 @@ This example combines all three surfaces:
 
 - ``scoped`` gives each user and session its own view of memory.
 - the history processor injects relevant memory before each turn.
-- ``store_run`` writes each turn back to AgentMemory so it survives restarts.
+- ``store_run`` writes each turn back to Agent Memory so it survives restarts.
 
 Prerequisites:
     pip install "agent-memory-pydantic-ai" "pydantic-ai-slim[openai]"
@@ -22,11 +22,11 @@ import os
 from pydantic_ai import Agent
 from pydantic_ai.capabilities import ProcessHistory
 
-from agent_memory_pydantic_ai import AgentMemoryMemory, agent_memory_history_processor, store_run
+from agent_memory_pydantic_ai import AgentMemory, agent_memory_history_processor, store_run
 
 
 async def chat(user_id: str, session_id: str, turns: list[str]) -> None:
-    base = AgentMemoryMemory.connect(
+    base = AgentMemory.connect(
         context=os.environ["AGENT_MEMORY_CONTEXT"],
         endpoint=os.environ["AGENT_MEMORY_ENDPOINT"],
         api_key=os.environ["AGENT_MEMORY_API_KEY"],

@@ -1,10 +1,10 @@
-"""Single binding point to the AgentMemory Python client.
+"""Single binding point to the Agent Memory Python client.
 
-Every import of the AgentMemory SDK lives in this module. The rest of the package
+Every import of the Agent Memory SDK lives in this module. The rest of the package
 depends only on the :class:`AgentMemoryClient` protocol, so it can be tested with a
 fake client and stays decoupled from the exact SDK surface.
 
-AgentMemory ships in the base ``surrealdb`` package (v3 alpha or newer): the async
+Agent Memory ships in the base ``surrealdb`` package (v3 alpha or newer): the async
 client is ``surrealdb.memory.AsyncMemory``. If it cannot be imported,
 :func:`build_client` raises :class:`AgentMemoryImportError` with a clear hint.
 """
@@ -16,16 +16,16 @@ from typing import Any, Protocol, runtime_checkable
 from .exceptions import AgentMemoryImportError
 
 _INSTALL_HINT = (
-    "The AgentMemory Python client could not be imported. AgentMemory ships in the "
+    "The AgentMemory Python client could not be imported. Agent Memory ships in the "
     "base SurrealDB SDK (v3 alpha or newer): install it with "
-    "`pip install surrealdb`, or construct AgentMemoryMemory with an existing "
-    "client instance via `AgentMemoryMemory(client)`."
+    "`pip install surrealdb`, or construct Agent Memory with an existing "
+    "client instance via `AgentMemory(client)`."
 )
 
 
 @runtime_checkable
 class AgentMemoryClient(Protocol):
-    """The async AgentMemory operations this package relies on.
+    """The async Agent Memory operations this package relies on.
 
     The concrete client is ``surrealdb.memory.AsyncMemory``. Method arguments are
     passed through as keyword arguments, so this protocol stays deliberately
@@ -55,12 +55,12 @@ def build_client(
     api_key: str,
     **client_kwargs: Any,
 ) -> AgentMemoryClient:
-    """Construct a AgentMemory client from connection details.
+    """Construct an Agent Memory client from connection details.
 
     Args:
-        context: AgentMemory context id (e.g. ``"acme-prod"``). Calls hit
+        context: Agent Memory context id (e.g. ``"acme-prod"``). Calls hit
             ``/api/v1/{context}/...``.
-        endpoint: Full URL of the AgentMemory host.
+        endpoint: Full URL of the Agent Memory host.
         api_key: Bearer token, sent as ``Authorization: Bearer <key>``.
         client_kwargs: Extra keyword arguments forwarded to the client
             (``timeout``, ``max_retries``, ``transport``).
@@ -69,7 +69,7 @@ def build_client(
         A client instance implementing :class:`AgentMemoryClient`.
 
     Raises:
-        AgentMemoryImportError: If the AgentMemory client cannot be imported.
+        AgentMemoryImportError: If the Agent Memory client cannot be imported.
     """
     try:
         from surrealdb.memory import AsyncMemory

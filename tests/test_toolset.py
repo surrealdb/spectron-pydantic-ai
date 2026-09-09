@@ -6,23 +6,21 @@ import pytest
 from pydantic_ai import Agent
 from pydantic_ai.models.test import TestModel
 
-from agent_memory_pydantic_ai import ALL_TOOLS, DEFAULT_TOOLS, AgentMemoryMemory, AgentMemoryToolset
+from agent_memory_pydantic_ai import ALL_TOOLS, DEFAULT_TOOLS, AgentMemory, AgentMemoryToolset
 from tests.conftest import FakeAgentMemory
 
 
-def test_default_and_all_tool_sets(memory: AgentMemoryMemory) -> None:
+def test_default_and_all_tool_sets(memory: AgentMemory) -> None:
     assert DEFAULT_TOOLS == ("recall", "context", "remember")
     assert set(DEFAULT_TOOLS).issubset(set(ALL_TOOLS))
 
 
-def test_unknown_tool_raises(memory: AgentMemoryMemory) -> None:
-    with pytest.raises(ValueError, match="Unknown AgentMemory tools"):
+def test_unknown_tool_raises(memory: AgentMemory) -> None:
+    with pytest.raises(ValueError, match="Unknown Agent Memory tools"):
         AgentMemoryToolset(memory, tools=["recall", "teleport"])
 
 
-async def test_default_toolset_calls_dispatch(
-    memory: AgentMemoryMemory, client: FakeAgentMemory
-) -> None:
+async def test_default_toolset_calls_dispatch(memory: AgentMemory, client: FakeAgentMemory) -> None:
     toolset = AgentMemoryToolset(memory)
     agent = Agent(TestModel(), toolsets=[toolset])
     await agent.run("hello")
@@ -33,7 +31,7 @@ async def test_default_toolset_calls_dispatch(
 
 
 async def test_custom_tool_subset_limits_surface(
-    memory: AgentMemoryMemory, client: FakeAgentMemory
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
     toolset = AgentMemoryToolset(memory, tools=["recall"])
     agent = Agent(TestModel(), toolsets=[toolset])
@@ -42,7 +40,7 @@ async def test_custom_tool_subset_limits_surface(
     assert called == {"recall"}
 
 
-async def test_forget_is_opt_in(memory: AgentMemoryMemory, client: FakeAgentMemory) -> None:
+async def test_forget_is_opt_in(memory: AgentMemory, client: FakeAgentMemory) -> None:
     toolset = AgentMemoryToolset(memory)  # defaults exclude forget
     agent = Agent(TestModel(), toolsets=[toolset])
     await agent.run("hello")

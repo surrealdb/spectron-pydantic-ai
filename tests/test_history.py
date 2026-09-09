@@ -14,7 +14,7 @@ from pydantic_ai.capabilities import ProcessHistory
 from pydantic_ai.models.test import TestModel
 
 from agent_memory_pydantic_ai import (
-    AgentMemoryMemory,
+    AgentMemory,
     agent_memory_history_processor,
     store_messages,
     store_run,
@@ -33,7 +33,7 @@ def _system_texts(messages: list) -> list[str]:
 
 
 async def test_processor_injects_recalled_memory(
-    memory: AgentMemoryMemory, client: FakeAgentMemory
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
     processor = agent_memory_history_processor(memory)
     agent = Agent(TestModel(), capabilities=[ProcessHistory(processor)])
@@ -46,7 +46,7 @@ async def test_processor_injects_recalled_memory(
 
 
 async def test_context_mode_uses_context_operation(
-    memory: AgentMemoryMemory, client: FakeAgentMemory
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
     processor = agent_memory_history_processor(memory, mode="context")
     agent = Agent(TestModel(), capabilities=[ProcessHistory(processor)])
@@ -58,7 +58,7 @@ async def test_context_mode_uses_context_operation(
 
 
 async def test_recall_mode_skips_when_no_user_text(
-    memory: AgentMemoryMemory, client: FakeAgentMemory
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
     processor = agent_memory_history_processor(memory)
     # A history with no user prompt should not trigger a recall call.
@@ -72,7 +72,7 @@ async def test_recall_mode_skips_when_no_user_text(
     assert "recall" not in client.names()
 
 
-async def test_custom_template_is_applied(memory: AgentMemoryMemory) -> None:
+async def test_custom_template_is_applied(memory: AgentMemory) -> None:
     processor = agent_memory_history_processor(memory, template=lambda block: f"MEMORY::\n{block}")
     agent = Agent(TestModel(), capabilities=[ProcessHistory(processor)])
     result = await agent.run("Where do I live?")
@@ -81,7 +81,7 @@ async def test_custom_template_is_applied(memory: AgentMemoryMemory) -> None:
 
 
 async def test_store_messages_builds_transcript(
-    memory: AgentMemoryMemory, client: FakeAgentMemory
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
     messages = [
         ModelRequest(parts=[UserPromptPart(content="I prefer window seats")]),
@@ -95,16 +95,14 @@ async def test_store_messages_builds_transcript(
     ]
 
 
-async def test_store_messages_skips_empty(
-    memory: AgentMemoryMemory, client: FakeAgentMemory
-) -> None:
+async def test_store_messages_skips_empty(memory: AgentMemory, client: FakeAgentMemory) -> None:
     result = await store_messages(memory, [])
     assert result is None
     assert "remember_many" not in client.names()
 
 
 async def test_store_run_persists_new_messages(
-    memory: AgentMemoryMemory, client: FakeAgentMemory
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
     agent = Agent(TestModel())
     result = await agent.run("hello")

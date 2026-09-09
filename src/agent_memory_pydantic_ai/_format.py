@@ -1,6 +1,6 @@
-"""Helpers for turning AgentMemory results into text for a model to read.
+"""Helpers for turning Agent Memory results into text for a model to read.
 
-AgentMemory returns structured results. The exact shape depends on the operation
+Agent Memory returns structured results. The exact shape depends on the operation
 and the SDK version, so these helpers accept a range of shapes (a string, a
 list of records, or a mapping with a ``results``/``memories`` key) and produce a
 compact, readable block.
@@ -61,7 +61,7 @@ def _iter_records(results: Any) -> list[Any]:
 
 
 def format_results(results: Any) -> str:
-    """Format AgentMemory results as a newline-separated list of bullet points.
+    """Format Agent Memory results as a newline-separated list of bullet points.
 
     Returns an empty string when there is nothing to show.
     """

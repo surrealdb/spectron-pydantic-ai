@@ -1,8 +1,8 @@
 # agent-memory-pydantic-ai
 
-AgentMemory agent memory for [Pydantic AI](https://ai.pydantic.dev).
+Agent Memory for [Pydantic AI](https://ai.pydantic.dev).
 
-[AgentMemory](https://surrealdb.com/agent-memory) is SurrealDB's memory and
+[Agent Memory](https://surrealdb.com/agent-memory) is SurrealDB's memory and
 knowledge layer for AI agents. This package connects it to Pydantic AI through
 that framework's own extension points, so an agent can remember facts across
 runs, recall them when they are relevant, and keep a durable record of its
@@ -15,15 +15,15 @@ It gives you three surfaces, which you can use on their own or together:
 - **Auto-recall** (`agent_memory_history_processor`): inject relevant memory before
   each model request, with no tool call required.
 - **Persistence** (`store_run`, `store_messages`): write a run's messages back
-  to AgentMemory so conversations survive across sessions.
+  to Agent Memory so conversations survive across sessions.
 
 ## Status
 
-AgentMemory is in early preview. Its Python client ships in the base SurrealDB SDK
+Agent Memory is in early preview. Its Python client ships in the base SurrealDB SDK
 (`surrealdb`, v3 alpha or newer), which installs automatically as a dependency
-of this package. Until you have access to a AgentMemory instance, you can still
+of this package. Until you have access to an Agent Memory instance, you can still
 install this package, wire it into an agent, and run the test suite: every
-AgentMemory call goes through a small client protocol that is easy to fake.
+Agent Memory call goes through a small client protocol that is easy to fake.
 
 ## Install
 
@@ -31,7 +31,7 @@ AgentMemory call goes through a small client protocol that is easy to fake.
 pip install agent-memory-pydantic-ai
 ```
 
-To run against a live AgentMemory instance and a model provider (the AgentMemory
+To run against a live Agent Memory instance and a model provider (the Agent Memory
 client is bundled in `surrealdb`, installed automatically):
 
 ```bash
@@ -43,10 +43,10 @@ pip install "agent-memory-pydantic-ai" "pydantic-ai-slim[openai]"
 ```python
 import asyncio
 from pydantic_ai import Agent
-from agent_memory_pydantic_ai import AgentMemoryMemory, AgentMemoryToolset
+from agent_memory_pydantic_ai import AgentMemory, AgentMemoryToolset
 
 async def main():
-    memory = AgentMemoryMemory.connect(
+    memory = AgentMemory.connect(
         context="your-context",
         endpoint="https://your-agent_memory-instance",
         api_key="your-api-key",
@@ -96,13 +96,13 @@ await store_run(memory, result)
 
 ## Scoping and multi-tenancy
 
-`AgentMemoryMemory` carries a scope (`session_id`, `scope`, `on_behalf_of`) that is
+`AgentMemory` carries a scope (`session_id`, `scope`, `on_behalf_of`) that is
 added to every operation — `scope` is applied as `scopes` on writes and `lens`
 on reads. One connection can serve many users and sessions by creating narrowed
 views:
 
 ```python
-base = AgentMemoryMemory(client)
+base = AgentMemory(client)
 alice = base.scoped(on_behalf_of="alice", session_id="s1")
 bob = base.scoped(on_behalf_of="bob", session_id="s2")
 ```
@@ -111,10 +111,10 @@ bob = base.scoped(on_behalf_of="bob", session_id="s2")
 
 | Name | Purpose |
 | --- | --- |
-| `AgentMemoryMemory` | Scoped wrapper over the AgentMemory client. `connect(...)`, `scoped(...)`, and the memory verbs (`remember`, `remember_many`, `recall`, `query_context`, `reflect`, `forget`, `inspect`, `upload`). |
+| `AgentMemory` | Scoped wrapper over the Agent Memory client. `connect(...)`, `scoped(...)`, and the memory verbs (`remember`, `remember_many`, `recall`, `query_context`, `reflect`, `forget`, `inspect`, `upload`). |
 | `AgentMemoryToolset` | Pydantic AI toolset exposing memory operations as tools. |
 | `agent_memory_history_processor` | Build a history processor for auto-recall. |
-| `store_run`, `store_messages` | Persist messages back to AgentMemory. |
+| `store_run`, `store_messages` | Persist messages back to Agent Memory. |
 | `AgentMemoryClient` | Protocol describing the client this package needs. |
 | `AgentMemoryError`, `AgentMemoryImportError` | Exceptions raised by the package. |
 

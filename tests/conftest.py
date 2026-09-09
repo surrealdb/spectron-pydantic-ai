@@ -1,7 +1,7 @@
 """Shared test fixtures.
 
-``FakeAgentMemory`` implements the AgentMemory client protocol in memory so the whole
-package can be tested without a live AgentMemory service or a real model. It mirrors
+``FakeAgentMemory`` implements the Agent Memory client protocol in memory so the whole
+package can be tested without a live Agent Memory service or a real model. It mirrors
 the real ``surrealdb.AsyncMemory`` surface: headline verbs take their first
 argument positionally, and document uploads live under a ``documents`` namespace.
 """
@@ -12,7 +12,7 @@ from typing import Any
 
 import pytest
 
-from agent_memory_pydantic_ai import AgentMemoryMemory
+from agent_memory_pydantic_ai import AgentMemory
 
 
 class FakeDocuments:
@@ -27,7 +27,7 @@ class FakeDocuments:
 
 
 class FakeAgentMemory:
-    """An in-memory stand-in for the AgentMemory async client.
+    """An in-memory stand-in for the Agent Memory async client.
 
     Every call is recorded in ``calls`` as a ``(name, kwargs)`` tuple, with the
     positional argument folded into the recorded kwargs under its parameter
@@ -86,8 +86,8 @@ def client() -> FakeAgentMemory:
 
 
 @pytest.fixture
-def memory(client: FakeAgentMemory) -> AgentMemoryMemory:
-    return AgentMemoryMemory(
+def memory(client: FakeAgentMemory) -> AgentMemory:
+    return AgentMemory(
         client,
         session_id="session-1",
         scope="org/acme",

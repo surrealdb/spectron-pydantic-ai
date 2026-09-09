@@ -1,6 +1,6 @@
-"""A Pydantic AI toolset backed by AgentMemory memory.
+"""A Pydantic AI toolset backed by Agent Memory.
 
-:class:`AgentMemoryToolset` exposes AgentMemory operations as tools the agent can
+:class:`AgentMemoryToolset` exposes Agent Memory operations as tools the agent can
 call on its own. Attach it to an agent with ``Agent(..., toolsets=[toolset])``.
 The docstrings on each tool are what the model reads to decide when to call
 them, so they are written for that audience.
@@ -14,7 +14,7 @@ from typing import Any
 from pydantic_ai import FunctionToolset
 
 from ._format import format_results
-from .memory import AgentMemoryMemory
+from .memory import AgentMemory
 
 DEFAULT_TOOLS: tuple[str, ...] = ("recall", "context", "remember")
 """Operations exposed by default. Read and write, without deletion."""
@@ -29,7 +29,7 @@ ALL_TOOLS: tuple[str, ...] = (
 """Every operation the toolset can expose."""
 
 
-def _make_recall(memory: AgentMemoryMemory) -> Callable[..., Any]:
+def _make_recall(memory: AgentMemory) -> Callable[..., Any]:
     async def recall(query: str, limit: int = 8) -> str:
         """Search long-term memory for information relevant to a query.
 
@@ -42,7 +42,7 @@ def _make_recall(memory: AgentMemoryMemory) -> Callable[..., Any]:
     return recall
 
 
-def _make_context(memory: AgentMemoryMemory) -> Callable[..., Any]:
+def _make_context(memory: AgentMemory) -> Callable[..., Any]:
     async def context(query: str = "") -> str:
         """Fetch the current working context: active topics and recent intents.
 
@@ -56,7 +56,7 @@ def _make_context(memory: AgentMemoryMemory) -> Callable[..., Any]:
     return context
 
 
-def _make_remember(memory: AgentMemoryMemory) -> Callable[..., Any]:
+def _make_remember(memory: AgentMemory) -> Callable[..., Any]:
     async def remember(content: str) -> str:
         """Store a fact or preference in long-term memory for future recall.
 
@@ -69,7 +69,7 @@ def _make_remember(memory: AgentMemoryMemory) -> Callable[..., Any]:
     return remember
 
 
-def _make_reflect(memory: AgentMemoryMemory) -> Callable[..., Any]:
+def _make_reflect(memory: AgentMemory) -> Callable[..., Any]:
     async def reflect(query: str) -> str:
         """Synthesise an answer from across stored memories.
 
@@ -82,7 +82,7 @@ def _make_reflect(memory: AgentMemoryMemory) -> Callable[..., Any]:
     return reflect
 
 
-def _make_forget(memory: AgentMemoryMemory) -> Callable[..., Any]:
+def _make_forget(memory: AgentMemory) -> Callable[..., Any]:
     async def forget(target: str) -> str:
         """Delete memories matching a description or identifier.
 
@@ -94,7 +94,7 @@ def _make_forget(memory: AgentMemoryMemory) -> Callable[..., Any]:
     return forget
 
 
-_TOOL_FACTORIES: dict[str, Callable[[AgentMemoryMemory], Callable[..., Any]]] = {
+_TOOL_FACTORIES: dict[str, Callable[[AgentMemory], Callable[..., Any]]] = {
     "recall": _make_recall,
     "context": _make_context,
     "remember": _make_remember,
@@ -104,7 +104,7 @@ _TOOL_FACTORIES: dict[str, Callable[[AgentMemoryMemory], Callable[..., Any]]] = 
 
 
 class AgentMemoryToolset(FunctionToolset[Any]):
-    """Expose AgentMemory memory operations as agent tools.
+    """Expose Agent Memory operations as agent tools.
 
     Args:
         memory: The scoped memory the tools operate on.
@@ -121,7 +121,7 @@ class AgentMemoryToolset(FunctionToolset[Any]):
 
     def __init__(
         self,
-        memory: AgentMemoryMemory,
+        memory: AgentMemory,
         *,
         tools: Sequence[str] = DEFAULT_TOOLS,
         id: str | None = None,
@@ -131,7 +131,7 @@ class AgentMemoryToolset(FunctionToolset[Any]):
         if unknown:
             valid = ", ".join(_TOOL_FACTORIES)
             raise ValueError(
-                f"Unknown AgentMemory tools: {', '.join(unknown)}. Valid tools: {valid}."
+                f"Unknown Agent Memory tools: {', '.join(unknown)}. Valid tools: {valid}."
             )
         functions = [_TOOL_FACTORIES[name](memory) for name in tools]
         super().__init__(functions, id=id or "agent_memory")

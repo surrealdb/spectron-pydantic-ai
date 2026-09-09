@@ -1,7 +1,7 @@
 """Auto-recall: inject relevant memory before each run with no tool call.
 
 The history processor looks at the latest user message, recalls related
-memories from AgentMemory, and prepends them as context. The agent never has to
+memories from Agent Memory, and prepends them as context. The agent never has to
 decide to call a tool.
 
 Prerequisites:
@@ -20,11 +20,11 @@ import os
 from pydantic_ai import Agent
 from pydantic_ai.capabilities import ProcessHistory
 
-from agent_memory_pydantic_ai import AgentMemoryMemory, agent_memory_history_processor
+from agent_memory_pydantic_ai import AgentMemory, agent_memory_history_processor
 
 
 async def main() -> None:
-    memory = AgentMemoryMemory.connect(
+    memory = AgentMemory.connect(
         context=os.environ["AGENT_MEMORY_CONTEXT"],
         endpoint=os.environ["AGENT_MEMORY_ENDPOINT"],
         api_key=os.environ["AGENT_MEMORY_API_KEY"],
