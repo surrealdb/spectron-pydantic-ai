@@ -9,7 +9,7 @@ three surfaces:
 - :func:`store_run` and :func:`store_messages`: persistence of a run's messages
   back to Agent Memory.
 
-All of these operate on a :class:`Agent Memory`, a scoped wrapper around the
+All of these operate on a :class:`AgentMemory`, a scoped wrapper around the
 Agent Memory client.
 """
 

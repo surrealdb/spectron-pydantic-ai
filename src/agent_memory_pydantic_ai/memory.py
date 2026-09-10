@@ -1,6 +1,6 @@
 """High-level, scoped wrapper around an Agent Memory client.
 
-:class:`Agent Memory` carries a memory scope and forwards Agent Memory operations
+:class:`AgentMemory` carries a memory scope and forwards Agent Memory operations
 to the underlying client, merging the scope into every call. The scope maps
 onto the SDK's own primitives:
 
@@ -11,7 +11,7 @@ onto the SDK's own primitives:
 - ``on_behalf_of`` — the principal a call acts for, forwarded to every verb.
 
 One connection can serve many users and sessions by creating narrowed views
-with :meth:`Agent Memory.scoped`.
+with :meth:`AgentMemory.scoped`.
 """
 
 from __future__ import annotations
