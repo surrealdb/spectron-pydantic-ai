@@ -1,6 +1,6 @@
-"""A Pydantic AI toolset backed by Spectron memory.
+"""A Pydantic AI toolset backed by Agent Memory.
 
-:class:`SpectronToolset` exposes Spectron operations as tools the agent can
+:class:`AgentMemoryToolset` exposes Agent Memory operations as tools the agent can
 call on its own. Attach it to an agent with ``Agent(..., toolsets=[toolset])``.
 The docstrings on each tool are what the model reads to decide when to call
 them, so they are written for that audience.
@@ -14,7 +14,7 @@ from typing import Any
 from pydantic_ai import FunctionToolset
 
 from ._format import format_results
-from .memory import SpectronMemory
+from .memory import AgentMemory
 
 DEFAULT_TOOLS: tuple[str, ...] = ("recall", "context", "remember")
 """Operations exposed by default. Read and write, without deletion."""
@@ -29,7 +29,7 @@ ALL_TOOLS: tuple[str, ...] = (
 """Every operation the toolset can expose."""
 
 
-def _make_recall(memory: SpectronMemory) -> Callable[..., Any]:
+def _make_recall(memory: AgentMemory) -> Callable[..., Any]:
     async def recall(query: str, limit: int = 8) -> str:
         """Search long-term memory for information relevant to a query.
 
@@ -42,7 +42,7 @@ def _make_recall(memory: SpectronMemory) -> Callable[..., Any]:
     return recall
 
 
-def _make_context(memory: SpectronMemory) -> Callable[..., Any]:
+def _make_context(memory: AgentMemory) -> Callable[..., Any]:
     async def context(query: str = "") -> str:
         """Fetch the current working context: active topics and recent intents.
 
@@ -56,7 +56,7 @@ def _make_context(memory: SpectronMemory) -> Callable[..., Any]:
     return context
 
 
-def _make_remember(memory: SpectronMemory) -> Callable[..., Any]:
+def _make_remember(memory: AgentMemory) -> Callable[..., Any]:
     async def remember(content: str) -> str:
         """Store a fact or preference in long-term memory for future recall.
 
@@ -69,7 +69,7 @@ def _make_remember(memory: SpectronMemory) -> Callable[..., Any]:
     return remember
 
 
-def _make_reflect(memory: SpectronMemory) -> Callable[..., Any]:
+def _make_reflect(memory: AgentMemory) -> Callable[..., Any]:
     async def reflect(query: str) -> str:
         """Synthesise an answer from across stored memories.
 
@@ -82,7 +82,7 @@ def _make_reflect(memory: SpectronMemory) -> Callable[..., Any]:
     return reflect
 
 
-def _make_forget(memory: SpectronMemory) -> Callable[..., Any]:
+def _make_forget(memory: AgentMemory) -> Callable[..., Any]:
     async def forget(target: str) -> str:
         """Delete memories matching a description or identifier.
 
@@ -94,7 +94,7 @@ def _make_forget(memory: SpectronMemory) -> Callable[..., Any]:
     return forget
 
 
-_TOOL_FACTORIES: dict[str, Callable[[SpectronMemory], Callable[..., Any]]] = {
+_TOOL_FACTORIES: dict[str, Callable[[AgentMemory], Callable[..., Any]]] = {
     "recall": _make_recall,
     "context": _make_context,
     "remember": _make_remember,
@@ -103,8 +103,8 @@ _TOOL_FACTORIES: dict[str, Callable[[SpectronMemory], Callable[..., Any]]] = {
 }
 
 
-class SpectronToolset(FunctionToolset[Any]):
-    """Expose Spectron memory operations as agent tools.
+class AgentMemoryToolset(FunctionToolset[Any]):
+    """Expose Agent Memory operations as agent tools.
 
     Args:
         memory: The scoped memory the tools operate on.
@@ -115,13 +115,13 @@ class SpectronToolset(FunctionToolset[Any]):
 
     Example:
         >>> from pydantic_ai import Agent
-        >>> toolset = SpectronToolset(memory)  # doctest: +SKIP
+        >>> toolset = AgentMemoryToolset(memory)  # doctest: +SKIP
         >>> agent = Agent("openai:gpt-4o", toolsets=[toolset])  # doctest: +SKIP
     """
 
     def __init__(
         self,
-        memory: SpectronMemory,
+        memory: AgentMemory,
         *,
         tools: Sequence[str] = DEFAULT_TOOLS,
         id: str | None = None,
@@ -130,9 +130,11 @@ class SpectronToolset(FunctionToolset[Any]):
         unknown = [name for name in tools if name not in _TOOL_FACTORIES]
         if unknown:
             valid = ", ".join(_TOOL_FACTORIES)
-            raise ValueError(f"Unknown Spectron tools: {', '.join(unknown)}. Valid tools: {valid}.")
+            raise ValueError(
+                f"Unknown Agent Memory tools: {', '.join(unknown)}. Valid tools: {valid}."
+            )
         functions = [_TOOL_FACTORIES[name](memory) for name in tools]
-        super().__init__(functions, id=id or "spectron")
+        super().__init__(functions, id=id or "agent_memory")
 
 
-__all__ = ["ALL_TOOLS", "DEFAULT_TOOLS", "SpectronToolset"]
+__all__ = ["ALL_TOOLS", "DEFAULT_TOOLS", "AgentMemoryToolset"]

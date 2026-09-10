@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "spectron-pydantic-ai"
-version = "0.1.0"
-description = "Spectron agent memory for Pydantic AI: toolset, auto-recall history processor, and persistence helpers."
+name = "agent-memory-pydantic-ai"
+version = "0.2.0"
+description = "Agent Memory for Pydantic AI: toolset, auto-recall history processor, and persistence helpers."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
@@ -13,11 +13,10 @@ license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "SurrealDB" }]
 keywords = [
     "surrealdb",
-    "spectron",
-    "pydantic-ai",
     "agent-memory",
+    "pydantic-ai",
     "llm",
-    "ai-agents",
+    "ai-agents"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -32,13 +31,13 @@ classifiers = [
 ]
 dependencies = [
     "pydantic-ai-slim>=2.7",
-    "surrealdb>=3.0.0a2",
+    "surrealdb[memory]>=3.0.0b8",
 ]
 
 [project.urls]
-Homepage = "https://surrealdb.com/platform/spectron"
-Repository = "https://github.com/surrealdb-dev/spectron-pydantic-ai"
-Issues = "https://github.com/surrealdb-dev/spectron-pydantic-ai/issues"
+Homepage = "https://surrealdb.com/agent-memory"
+Repository = "https://github.com/surrealdb/agent-memory-pydantic-ai"
+Issues = "https://github.com/surrealdb/agent-memory-pydantic-ai/issues"
 
 [dependency-groups]
 dev = [
@@ -49,7 +48,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/spectron_pydantic_ai"]
+packages = ["src/agent_memory_pydantic_ai"]
 
 [tool.ruff]
 line-length = 100

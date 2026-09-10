@@ -13,13 +13,13 @@ from pydantic_ai import (
 from pydantic_ai.capabilities import ProcessHistory
 from pydantic_ai.models.test import TestModel
 
-from spectron_pydantic_ai import (
-    SpectronMemory,
-    spectron_history_processor,
+from agent_memory_pydantic_ai import (
+    AgentMemory,
+    agent_memory_history_processor,
     store_messages,
     store_run,
 )
-from tests.conftest import FakeSpectron
+from tests.conftest import FakeAgentMemory
 
 
 def _system_texts(messages: list) -> list[str]:
@@ -33,22 +33,22 @@ def _system_texts(messages: list) -> list[str]:
 
 
 async def test_processor_injects_recalled_memory(
-    memory: SpectronMemory, client: FakeSpectron
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
-    processor = spectron_history_processor(memory)
+    processor = agent_memory_history_processor(memory)
     agent = Agent(TestModel(), capabilities=[ProcessHistory(processor)])
     result = await agent.run("Where do I live?")
 
     assert "recall" in client.names()
     injected = _system_texts(result.all_messages())
     assert any("User lives in Berlin" in text for text in injected)
-    assert any("Relevant memory from Spectron" in text for text in injected)
+    assert any("Relevant memory from AgentMemory" in text for text in injected)
 
 
 async def test_context_mode_uses_context_operation(
-    memory: SpectronMemory, client: FakeSpectron
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
-    processor = spectron_history_processor(memory, mode="context")
+    processor = agent_memory_history_processor(memory, mode="context")
     agent = Agent(TestModel(), capabilities=[ProcessHistory(processor)])
     result = await agent.run("What are we working on?")
 
@@ -58,9 +58,9 @@ async def test_context_mode_uses_context_operation(
 
 
 async def test_recall_mode_skips_when_no_user_text(
-    memory: SpectronMemory, client: FakeSpectron
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
-    processor = spectron_history_processor(memory)
+    processor = agent_memory_history_processor(memory)
     # A history with no user prompt should not trigger a recall call.
     messages = [ModelResponse(parts=[TextPart(content="hi")])]
 
@@ -72,8 +72,8 @@ async def test_recall_mode_skips_when_no_user_text(
     assert "recall" not in client.names()
 
 
-async def test_custom_template_is_applied(memory: SpectronMemory) -> None:
-    processor = spectron_history_processor(memory, template=lambda block: f"MEMORY::\n{block}")
+async def test_custom_template_is_applied(memory: AgentMemory) -> None:
+    processor = agent_memory_history_processor(memory, template=lambda block: f"MEMORY::\n{block}")
     agent = Agent(TestModel(), capabilities=[ProcessHistory(processor)])
     result = await agent.run("Where do I live?")
     injected = _system_texts(result.all_messages())
@@ -81,7 +81,7 @@ async def test_custom_template_is_applied(memory: SpectronMemory) -> None:
 
 
 async def test_store_messages_builds_transcript(
-    memory: SpectronMemory, client: FakeSpectron
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
     messages = [
         ModelRequest(parts=[UserPromptPart(content="I prefer window seats")]),
@@ -95,14 +95,14 @@ async def test_store_messages_builds_transcript(
     ]
 
 
-async def test_store_messages_skips_empty(memory: SpectronMemory, client: FakeSpectron) -> None:
+async def test_store_messages_skips_empty(memory: AgentMemory, client: FakeAgentMemory) -> None:
     result = await store_messages(memory, [])
     assert result is None
     assert "remember_many" not in client.names()
 
 
 async def test_store_run_persists_new_messages(
-    memory: SpectronMemory, client: FakeSpectron
+    memory: AgentMemory, client: FakeAgentMemory
 ) -> None:
     agent = Agent(TestModel())
     result = await agent.run("hello")
